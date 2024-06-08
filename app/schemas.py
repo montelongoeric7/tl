@@ -1,7 +1,7 @@
+# schemas.py
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
-
 
 class UserBase(BaseModel):
     username: str
@@ -17,11 +17,11 @@ class UserOut(UserBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Update for pydantic V2
 
 class UserLogin(BaseModel):
     email: EmailStr
-
+    password: str
 
 class InformationBase(BaseModel):
     title: str
@@ -38,7 +38,7 @@ class InformationOut(InformationBase):
     owner: UserOut
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Update for pydantic V2
 
 class Token(BaseModel):
     access_token: str
@@ -47,6 +47,5 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     id: Optional[str] = None
 
-
 class ChatbotResponse(BaseModel):
-    potential_causes: str
+    write_up: str
