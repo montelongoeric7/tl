@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Heading, FormControl, FormLabel, Textarea, Input, Button, VStack } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 const Information = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ const Information = () => {
     content: '',
     published: true,
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +43,8 @@ const Information = () => {
 
       const data = await response.json();
       console.log('Information submitted successfully:', data);
-      // Handle successful submission (e.g., clear the text box, show a success message)
+      // Navigate to the consultation page
+      navigate('/consultation');
     } catch (error) {
       console.error('Error submitting information:', error);
       // Show error message

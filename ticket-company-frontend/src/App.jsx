@@ -7,7 +7,7 @@ import Contact from './pages/Contact';
 import SignUp from './pages/SignUp';
 import Login from './pages/Login';
 import Information from './pages/Information';
-import About from './pages/About';
+import Consultation from './pages/Consultation';
 import './App.css';
 
 function App() {
@@ -18,11 +18,12 @@ function App() {
         <div className="content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
             <Route path="/information" element={<Information />} />
+            <Route path="/consultation" element={<Consultation />} />
           </Routes>
         </div>
       </div>
