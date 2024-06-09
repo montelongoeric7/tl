@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Heading,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  VStack,
-  Checkbox,
-} from '@chakra-ui/react';
+import { Box, Heading, FormControl, FormLabel, Input, Button, VStack, Checkbox } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +10,8 @@ const SignUp = () => {
     isAdmin: false,
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -26,10 +20,30 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add the logic to send the form data to the backend here
-    console.log(formData);
+    try {
+      const response = await fetch('http://localhost:8000/users/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail);
+      }
+
+      const data = await response.json();
+      console.log('User registered successfully:', data);
+      // Store token or handle successful registration
+      navigate('/information');
+    } catch (error) {
+      console.error('Error registering user:', error);
+      // Show error message
+    }
   };
 
   return (

@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Heading,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Heading, FormControl, FormLabel, Input, Button, VStack } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,10 +18,36 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add the logic to send the form data to the backend here
-    console.log(formData);
+    const formBody = new URLSearchParams({
+      username: formData.email,
+      password: formData.password,
+    });
+
+    try {
+      const response = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formBody.toString(),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail);
+      }
+
+      const data = await response.json();
+      console.log('Login successful:', data);
+      // Store the token
+      localStorage.setItem('token', data.access_token);
+      navigate('/information');
+    } catch (error) {
+      console.error('Error logging in:', error);
+      // Show error message
+    }
   };
 
   return (

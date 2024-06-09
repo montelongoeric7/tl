@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
-
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, nullable=False)
@@ -14,6 +13,8 @@ class User(Base):
     is_admin = Column(Boolean, default=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     
+    informations = relationship("Information", back_populates="owner")
+
 class Information(Base):
     __tablename__ = "information"
     id = Column(Integer, primary_key=True, nullable=False)
@@ -22,4 +23,5 @@ class Information(Base):
     published = Column(Boolean, server_default='TRUE', nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-    owner = relationship("User")
+    
+    owner = relationship("User", back_populates="informations")
