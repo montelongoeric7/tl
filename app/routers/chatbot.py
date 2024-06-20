@@ -7,6 +7,12 @@ import app.oauth2 as oauth2
 from app.config import settings
 import openai
 from langchain_community.llms import OpenAI
+from fastapi.responses import FileResponse
+import os
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
+import tempfile
 
 router = APIRouter(
     prefix="/chatbot",
@@ -27,6 +33,19 @@ def write_up(user_info: str) -> str:
 
     return "\n".join(formatted_causes)
 
+def generate_pdf(content: str) -> str:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp:
+        p = canvas.Canvas(temp.name, pagesize=letter)
+        width, height = letter
+        lines = content.split("\n")
+        y = height - 40
+        for line in lines:
+            p.drawString(40, y, line)
+            y -= 14  # Move to the next line
+        p.showPage()
+        p.save()
+        return temp.name
+
 @router.post("/lawyer_up", response_model=schemas.ChatbotResponse)
 def lawyer_up(current_user: models.User = Depends(oauth2.get_current_user), db: Session = Depends(get_db)):
     user_info = db.query(models.Information).filter(models.Information.user_id == current_user.id).all()
@@ -37,5 +56,9 @@ def lawyer_up(current_user: models.User = Depends(oauth2.get_current_user), db: 
     user_info_str = "\n".join([f"Title: {info.title}, Content: {info.content}" for info in user_info])
     write_up_result = write_up(user_info_str)
 
-    return {"write_up": write_up_result}
+    pdf_path = generate_pdf(write_up_result)
+    filename = "write_up.pdf"
+
+    return FileResponse(pdf_path, media_type='application/pdf', filename=filename)
+
 
